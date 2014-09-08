@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="cqengine">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../cqengine-read-only/target/classes" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../cqengine-read-only/src/main/java" />
+    </SOURCES>
+  </library>
+</component>

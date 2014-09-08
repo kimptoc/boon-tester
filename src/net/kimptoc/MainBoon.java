@@ -36,25 +36,40 @@ public class MainBoon {
 
         Repo<Integer, Map> dbRepo = Repos.builder()
                 .primaryKey("name")
-                .searchIndex("colour")
-                .searchIndex("job")
+                .lookupIndex("colour")
+                .lookupIndex("job")
                 .build(int.class, Map.class);
 
         dbRepo.addAll(database);
         log("Loaded repo:" + dbRepo.size());
 
+        long start = System.currentTimeMillis();
+        long count = 0;
 
         for (int i=0; i<5; i++) {
-            findColour(dbRepo, "red");
+//            findColour(dbRepo, "red");
 
-            findJob(dbRepo, "artist");
-            findJobColour(dbRepo, "blue", "clerk");
-            findJobSport(dbRepo, "manager", "cycle");
-            findJobColour2(dbRepo, "blue", "clerk");
+//            findJob(dbRepo, "artist");
+            count += findJobColour(dbRepo, "blue", "clerk").size();
+//            findJobSport(dbRepo, "manager", "cycle");
+//            findJobColour2(dbRepo, "blue", "clerk");
         }
 
 
-        log("end");
+        log("end1:"+(System.currentTimeMillis() - start));
+
+        start = System.currentTimeMillis();
+
+        for (int i=0; i<5; i++) {
+//            findColour(dbRepo, "red");
+//            findJob(dbRepo, "artist");
+            count += findJobColour(dbRepo, "blue", "clerk").size();
+//            findJobSport(dbRepo, "manager", "cycle");
+//            findJobColour2(dbRepo, "blue", "clerk");
+        }
+
+
+        log("end2:"+(System.currentTimeMillis() - start)+":"+count);
 
     }
 
@@ -76,11 +91,12 @@ public class MainBoon {
         log("Time to find 'red' people:"+elapsed+"ms - "+result.size()+" total.");
     }
 
-    private static void findJobColour(Repo<Integer, Map> dbRepo, String colour, String job) {
-        long start = System.currentTimeMillis();
+    private static List<Map> findJobColour(Repo<Integer, Map> dbRepo, String colour, String job) {
+//        long start = System.currentTimeMillis();
         List<Map> result = dbRepo.query(and( eq("colour", colour), eq("job", job)));
-        long elapsed = System.currentTimeMillis() - start;
-        log("Time to find '"+colour+"' '"+job+"' people:"+elapsed+"ms - "+result.size()+" total.");
+//        long elapsed = System.currentTimeMillis() - start;
+//        log("Time to find '"+colour+"' '"+job+"' people:"+elapsed+"ms - "+result.size()+" total.");
+        return result;
     }
     private static void findJobSport(Repo<Integer, Map> dbRepo, String job, String sport) {
         long start = System.currentTimeMillis();

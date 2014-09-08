@@ -5,5 +5,5 @@ package net.kimptoc;
  */
 public class Constants {
 //    static final int MAX_N = 3000000;
-    static final int MAX_N = 30000;
+    static final int MAX_N = 100000;
 }

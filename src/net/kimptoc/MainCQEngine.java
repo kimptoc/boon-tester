@@ -1,8 +1,12 @@
 package net.kimptoc;
 
+//import com.googlecode.cqengine.CQEngine;
+//import com.googlecode.cqengine.IndexedCollection;
+//import com.googlecode.cqengine.index.hash.HashIndex;
+
 import java.util.*;
 
-public class Main {
+public class MainCQEngine {
 
     static Collection<Map> database = new ArrayList<Map>();
 
@@ -26,10 +30,17 @@ public class Main {
 
         log("Loaded objects:"+database.size());
 
+//        indexedUsers = CQEngine.newInstance();
+//        indexedUsers.addIndex(HashIndex.onAttribute("job"));
+//        indexedUsers.addIndex(HashIndex.onAttribute("colour"));
+
+        log("Loaded CQEngine:"+database.size());
+
+
         for (int i=0; i<5; i++) {
             findColour();
             findJob();
-            findJobColour("clerk","blue");
+            findJobColour("clerk", "blue");
         }
 
 
@@ -55,25 +66,25 @@ public class Main {
 
     private static void findColour() {
         long start = System.currentTimeMillis();
-        Collection<Map> results = new LinkedList<Map>();
+        long count = 0;
         for (Map entry : database) {
             if (entry.get("colour").equals("red")) {
-                results.add(entry);
+                count++;
             }
         }
         long elapsed = System.currentTimeMillis() - start;
-        log("Time to find 'red' people:"+elapsed+"ms - "+results.size()+" total.");
+        log("Time to find 'red' people:"+elapsed+"ms - "+count+" total.");
     }
 
     private static void findJobColour(String job, String colour) {
         long start = System.currentTimeMillis();
-        Collection<Map> results = new LinkedList<Map>();
+        long count = 0;
         for (Map entry : database) {
             if (entry.get("colour").equals(colour) && entry.get("job").equals(job)) {
-                results.add(entry);
+                count++;
             }
         }
         long elapsed = System.currentTimeMillis() - start;
-        log("Time to find '"+colour+"' '"+job+"' people:"+elapsed+"ms - "+results.size()+" total.");
+        log("Time to find '"+colour+"' '"+job+"' people:"+elapsed+"ms - "+count+" total.");
     }
 }

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="cqengine-1.2.6-all">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/cqengine-1.2.6-all.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
