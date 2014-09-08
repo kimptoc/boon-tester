@@ -140,6 +140,20 @@ public class BoonTest2 {
 
         puts("Boon job/colour via filter BABY! elapsed", elapsed, "found", count);
 
+        start = System.currentTimeMillis();
+        for (int i=0; i<ITER; i++) {
+
+//            count+=findColourBoon(dbRepo, "red").size();
+//            count+=findJobBoon(dbRepo, "artist").size();
+            count+=findJobSportBoonViaFilter(dbRepo, "manager", "cycle").size();
+
+        }
+
+        elapsed = System.currentTimeMillis() - start;
+
+
+        puts("Boon job/sport via filter BABY! elapsed", elapsed, "found", count);
+
     }
 
     private static int findJob() {
@@ -188,6 +202,9 @@ public class BoonTest2 {
 
     private static Collection<Map<String, String>> findJobColourBoon(Repo<String, Map<String, String>> dbRepo, String colour, String job) {
         return dbRepo.results(eq("colour", colour)).filter(eq("job", job));
+    }
+    private static Collection<Map<String, String>> findJobSportBoonViaFilter(Repo<String, Map<String, String>> dbRepo, String job, String sport) {
+        return dbRepo.results(eq("sport", sport)).filter(eq("job", job));
     }
     private static List<Map<String, String>> findJobSportBoon(Repo<String, Map<String, String>> dbRepo, String job, String sport) {
         return dbRepo.query(and( eq("sport", sport), eq("job", job)));
