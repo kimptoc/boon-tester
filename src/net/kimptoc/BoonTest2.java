@@ -16,7 +16,8 @@ package net.kimptoc;
  */
 public class BoonTest2 {
 
-    static final int MAX_N = 10_000;
+//    static final int MAX_N = 10_000;
+    static final int MAX_N = 1_000_000;
 
     static final int ITER = 50;
 
@@ -24,7 +25,7 @@ public class BoonTest2 {
 
     static String[] jobs = new String[] {"manager", "clerk", "footballer", "artist", "teacher"};
     static String[] colours = new String[] {"red", "blue", "green", "yellow", "orange"};
-    static String[] sports = new String[] {"athletics", "soccer", "swim", "cycle"};
+    static String[] sports = new String[] {"athletics", "soccer", "swim", "cycle", "couch potato"};
 
 
     public static void main(String[] args) {
@@ -82,11 +83,14 @@ public class BoonTest2 {
         count=0;
 
         for (int i=0; i<ITER; i++) {
-            count+=findColourBoon(dbRepo, "red").size();
-            count+=findJobBoon(dbRepo, "artist").size();
+            count+=findBoon(dbRepo, "job", "artist").size();
+            count+=findBoon(dbRepo, "colour", "red").size();
+            count+=findBoon(dbRepo, "sport", "swim").size();
             count+=findJobSportBoon(dbRepo, "manager", "cycle").size();
-
+            count+=findJobSportBoonViaFilter(dbRepo, "manager", "cycle").size();
+            count+=findSportJobBoonViaFilter(dbRepo, "manager", "cycle").size();
             count+=findJobColourBoon(dbRepo, "clerk","blue").size();
+            count+=findColourJobBoon(dbRepo, "clerk","blue").size();
         }
 
         elapsed = System.currentTimeMillis() - start;
@@ -97,28 +101,17 @@ public class BoonTest2 {
 
         start = System.currentTimeMillis();
         for (int i=0; i<ITER; i++) {
-
-            count+=findColourBoon(dbRepo, "red").size();
-            count+=findJobBoon(dbRepo, "artist").size();
-//            count+=findJobSportBoon(dbRepo, "manager", "cycle").size();
-
-//            count+=findJobColourBoon(dbRepo, "clerk","blue").size();
+            count += findBoon(dbRepo, "job", "artist").size();
+            count += findBoon(dbRepo, "colour", "red").size();
+            count += findBoon(dbRepo, "sport", "swim").size();
         }
-
         elapsed = System.currentTimeMillis() - start;
-
 
         puts("Boon simples BABY! elapsed", elapsed, "found", count);
 
         start = System.currentTimeMillis();
-        for (int i=0; i<ITER; i++) {
-
-//            count+=findColourBoon(dbRepo, "red").size();
-//            count+=findJobBoon(dbRepo, "artist").size();
+        for (int i=0; i<ITER; i++)
             count+=findJobSportBoon(dbRepo, "manager", "cycle").size();
-
-//            count+=findJobColourBoon(dbRepo, "clerk","blue").size();
-        }
 
         elapsed = System.currentTimeMillis() - start;
 
@@ -126,33 +119,30 @@ public class BoonTest2 {
         puts("Boon job/sport via AND BABY! elapsed", elapsed, "found", count);
 
         start = System.currentTimeMillis();
-        for (int i=0; i<ITER; i++) {
-
-//            count+=findColourBoon(dbRepo, "red").size();
-//            count+=findJobBoon(dbRepo, "artist").size();
-//            count+=findJobSportBoon(dbRepo, "manager", "cycle").size();
-
+        for (int i=0; i<ITER; i++)
             count+=findJobColourBoon(dbRepo, "clerk","blue").size();
-        }
-
         elapsed = System.currentTimeMillis() - start;
-
-
         puts("Boon job/colour via filter BABY! elapsed", elapsed, "found", count);
 
         start = System.currentTimeMillis();
-        for (int i=0; i<ITER; i++) {
+        for (int i=0; i<ITER; i++)
+            count+=findColourJobBoon(dbRepo, "clerk","blue").size();
+        elapsed = System.currentTimeMillis() - start;
+        puts("Boon colour/job via filter BABY! elapsed", elapsed, "found", count);
 
-//            count+=findColourBoon(dbRepo, "red").size();
-//            count+=findJobBoon(dbRepo, "artist").size();
+        start = System.currentTimeMillis();
+        for (int i=0; i<ITER; i++)
             count+=findJobSportBoonViaFilter(dbRepo, "manager", "cycle").size();
-
-        }
-
         elapsed = System.currentTimeMillis() - start;
 
-
         puts("Boon job/sport via filter BABY! elapsed", elapsed, "found", count);
+
+        start = System.currentTimeMillis();
+        for (int i=0; i<ITER; i++)
+            count+=findSportJobBoonViaFilter(dbRepo, "manager", "cycle").size();
+        elapsed = System.currentTimeMillis() - start;
+
+        puts("Boon sport/job via filter BABY! elapsed", elapsed, "found", count);
 
     }
 
@@ -195,16 +185,26 @@ public class BoonTest2 {
         return dbRepo.query(eq("job", job));
 
     }
+    private static List<Map<String, String>>  findBoon(Repo<String, Map<String, String>> dbRepo, String thing, String value) {
+        return dbRepo.query(eq(thing, value));
+
+    }
 
     private static List<Map<String, String>> findColourBoon(Repo<String, Map<String, String>> dbRepo, String colour) {
         return dbRepo.query(eq("colour", colour));
     }
 
     private static Collection<Map<String, String>> findJobColourBoon(Repo<String, Map<String, String>> dbRepo, String colour, String job) {
+        return dbRepo.results(eq("job", job)).filter(eq("colour", colour));
+    }
+    private static Collection<Map<String, String>> findColourJobBoon(Repo<String, Map<String, String>> dbRepo, String colour, String job) {
         return dbRepo.results(eq("colour", colour)).filter(eq("job", job));
     }
-    private static Collection<Map<String, String>> findJobSportBoonViaFilter(Repo<String, Map<String, String>> dbRepo, String job, String sport) {
+    private static Collection<Map<String, String>> findSportJobBoonViaFilter(Repo<String, Map<String, String>> dbRepo, String job, String sport) {
         return dbRepo.results(eq("sport", sport)).filter(eq("job", job));
+    }
+    private static Collection<Map<String, String>> findJobSportBoonViaFilter(Repo<String, Map<String, String>> dbRepo, String job, String sport) {
+        return dbRepo.results(eq("job", job)).filter(eq("sport", sport));
     }
     private static List<Map<String, String>> findJobSportBoon(Repo<String, Map<String, String>> dbRepo, String job, String sport) {
         return dbRepo.query(and( eq("sport", sport), eq("job", job)));
