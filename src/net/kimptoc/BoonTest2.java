@@ -72,9 +72,9 @@ public class BoonTest2 {
         start = System.currentTimeMillis();
         Repo<String, Map<String, String>> dbRepo =  (Repo<String, Map<String, String>>)(Object) Repos.builder()
                 .primaryKey("name")
-                .lookupIndex("colour")
-                .lookupIndex("job")
                 .lookupIndex("sport")
+                .lookupIndex("job")
+                .lookupIndex("colour")
                 .build(String.class, Map.class);
 
         dbRepo.addAll(database);
@@ -112,10 +112,7 @@ public class BoonTest2 {
         start = System.currentTimeMillis();
         for (int i=0; i<ITER; i++)
             count+=findJobSportBoon(dbRepo, "manager", "cycle").size();
-
         elapsed = System.currentTimeMillis() - start;
-
-
         puts("Boon job/sport via AND BABY! elapsed", elapsed, "found", count);
 
         start = System.currentTimeMillis();
@@ -123,6 +120,12 @@ public class BoonTest2 {
             count+=findJobColourBoon(dbRepo, "clerk","blue").size();
         elapsed = System.currentTimeMillis() - start;
         puts("Boon job/colour via filter BABY! elapsed", elapsed, "found", count);
+
+        start = System.currentTimeMillis();
+        for (int i=0; i<ITER; i++)
+            count+=findColourAndJobBoon(dbRepo, "clerk","blue").size();
+        elapsed = System.currentTimeMillis() - start;
+        puts("Boon job AND colour BABY! elapsed", elapsed, "found", count);
 
         start = System.currentTimeMillis();
         for (int i=0; i<ITER; i++)
@@ -199,6 +202,9 @@ public class BoonTest2 {
     }
     private static Collection<Map<String, String>> findColourJobBoon(Repo<String, Map<String, String>> dbRepo, String colour, String job) {
         return dbRepo.results(eq("colour", colour)).filter(eq("job", job));
+    }
+    private static Collection<Map<String, String>> findColourAndJobBoon(Repo<String, Map<String, String>> dbRepo, String colour, String job) {
+        return dbRepo.query(and(eq("colour", colour),eq("job", job)));
     }
     private static Collection<Map<String, String>> findSportJobBoonViaFilter(Repo<String, Map<String, String>> dbRepo, String job, String sport) {
         return dbRepo.results(eq("sport", sport)).filter(eq("job", job));
