@@ -72,9 +72,9 @@ public class BoonTest2 {
         start = System.currentTimeMillis();
         Repo<String, Map<String, String>> dbRepo =  (Repo<String, Map<String, String>>)(Object) Repos.builder()
                 .primaryKey("name")
-                .lookupIndex("sport")
-                .lookupIndex("job")
-                .lookupIndex("colour")
+//                .lookupIndex("sport")
+//                .lookupIndex("job")
+//                .lookupIndex("colour")
                 .build(String.class, Map.class);
 
         dbRepo.addAll(database);
