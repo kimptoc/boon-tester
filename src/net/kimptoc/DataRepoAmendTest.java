@@ -15,7 +15,7 @@ import static org.boon.criteria.ObjectFilter.eq;
  */
 public class DataRepoAmendTest {
 
-    static List<Map<String, String>> database = new ArrayList<>();
+    static List<Map<String, String>> database = Collections.synchronizedList(new ArrayList<Map<String,String>>());
 
     static String[] jobs = new String[] {"manager", "clerk", "footballer", "artist", "teacher"};
     static String[] colours = new String[] {"red", "blue", "green", "yellow", "orange"};
@@ -24,42 +24,72 @@ public class DataRepoAmendTest {
 
     public static void main(String[] args) {
 
-        createEntry(database, 1, 0, 0, 0);
-        createEntry(database, 2, 1, 1, 1);
-        createEntry(database, 3, 0, 1, 2);
-        createEntry(database, 4, 2, 0, 3);
+        Repo<String, Map<String, String>> dbRepo = setup();
 
-        Repo<String, Map<String, String>> dbRepo = createDataRepo();
-
-        List<Map<String, String>> managers = findBoon(dbRepo, "manager", "job");
-        puts("Expect to be 2 managers:",managers.size());
-        puts("Expect to be 2 clerk:", findBoon(dbRepo, "clerk", "job").size());
-        puts("Expect to be 2 red:", findBoon(dbRepo, "red", "colour").size());
+        List<Map<String, String>> managers = doAmend(dbRepo);
 
         puts("just amend object");
-        managers.get(0).put("job","clerk");
         puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
         puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
 
+        dbRepo = setup();
+        managers = doAmend(dbRepo);
         puts("try update call");
         dbRepo.update(managers.get(0));
         puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
         puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
         puts("db size:",dbRepo.size());
 
+        dbRepo = setup();
+        managers = doAmend(dbRepo);
         puts("try modify call");
         dbRepo.modify(managers.get(0));
         puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
         puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
-        puts("Expect to be 2 red:", findBoon(dbRepo, "red", "colour").size());
+//        puts("Expect to be 2 red:", findBoon(dbRepo, "red", "colour").size());
         puts("db size:", dbRepo.size());
 
+        dbRepo = setup();
+        List<Map<String, String>> managers1 = findBoon(dbRepo, "manager", "job");
+        managers = managers1;
+        puts("try delete/add call");
+        Map<String, String> item = managers.get(0);
+        dbRepo.delete(item);
+        item.put("job", "clerk");
+        dbRepo.add(item);
+        puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
+        puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
+//        puts("Expect to be 2 red:", findBoon(dbRepo, "red", "colour").size());
+        puts("db size:", dbRepo.size());
+
+        dbRepo = setup();
+        doAmend(dbRepo);
         puts("recreate db");
         dbRepo = createDataRepo();
         puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
         puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
         puts("db size:", dbRepo.size());
 
+    }
+
+    private static List<Map<String, String>> doAmend(Repo<String, Map<String, String>> dbRepo) {
+        List<Map<String, String>> managers = findBoon(dbRepo, "manager", "job");
+//        puts("Expect to be 2 managers:",managers.size());
+//        puts("Expect to be 2 clerk:", findBoon(dbRepo, "clerk", "job").size());
+//        puts("Expect to be 2 red:", findBoon(dbRepo, "red", "colour").size());
+
+        managers.get(0).put("job","clerk");
+        return managers;
+    }
+
+    private static Repo<String, Map<String, String>> setup() {
+        database = new ArrayList<>();
+        createEntry(database, 1, 0, 0, 0);
+        createEntry(database, 2, 1, 1, 1);
+        createEntry(database, 3, 0, 1, 2);
+        createEntry(database, 4, 2, 0, 3);
+
+        return createDataRepo();
     }
 
     private static Repo<String, Map<String, String>> createDataRepo() {
@@ -71,7 +101,7 @@ public class DataRepoAmendTest {
                 .build(String.class, Map.class);
 
         dbRepo.addAll(database);
-        puts("db size:",dbRepo.size());
+//        puts("db size:",dbRepo.size());
         return dbRepo;
     }
 
