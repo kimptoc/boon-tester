@@ -8,7 +8,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="cqengine" level="project" />
     <orderEntry type="library" name="hsqldb" level="project" />
-    <orderEntry type="library" name="boon-0.4" level="project" />
+    <orderEntry type="library" name="boon-patch1" level="project" />
   </component>
 </module>
 

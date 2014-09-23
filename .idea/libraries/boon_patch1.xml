@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="boon-patch1">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../boon-kimptoc-patch1/target/classes" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -2,6 +2,7 @@ package net.kimptoc;
 
 //Bug report from https://github.com/kimptoc/boon-tester
 
+import org.boon.Maps;
 import org.boon.datarepo.Repo;
 import org.boon.datarepo.Repos;
 
@@ -26,24 +27,24 @@ public class DataRepoAmendTest {
 
         Repo<String, Map<String, String>> dbRepo = setup();
 
-        List<Map<String, String>> managers = doAmend(dbRepo);
+        Map<String, String> item = doAmend(dbRepo);
 
         puts("just amend object");
         puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
         puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
 
         dbRepo = setup();
-        managers = doAmend(dbRepo);
+        item = doAmend(dbRepo);
         puts("try update call");
-        dbRepo.update(managers.get(0));
+        dbRepo.update(item);
         puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
         puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
         puts("db size:",dbRepo.size());
 
         dbRepo = setup();
-        managers = doAmend(dbRepo);
+        item = doAmend(dbRepo);
         puts("try modify call");
-        dbRepo.modify(managers.get(0));
+        dbRepo.modify(item);
         puts("Expect to be 1 manager:", findBoon(dbRepo, "manager", "job").size());
         puts("Expect to be 3 clerks:", findBoon(dbRepo, "clerk", "job").size());
 //        puts("Expect to be 2 red:", findBoon(dbRepo, "red", "colour").size());
@@ -51,9 +52,8 @@ public class DataRepoAmendTest {
 
         dbRepo = setup();
         List<Map<String, String>> managers1 = findBoon(dbRepo, "manager", "job");
-        managers = managers1;
         puts("try delete/add call");
-        Map<String, String> item = managers.get(0);
+        item = managers1.get(0);
         dbRepo.delete(item);
         item.put("job", "clerk");
         dbRepo.add(item);
@@ -72,14 +72,15 @@ public class DataRepoAmendTest {
 
     }
 
-    private static List<Map<String, String>> doAmend(Repo<String, Map<String, String>> dbRepo) {
+    private static Map<String, String> doAmend(Repo<String, Map<String, String>> dbRepo) {
         List<Map<String, String>> managers = findBoon(dbRepo, "manager", "job");
 //        puts("Expect to be 2 managers:",managers.size());
 //        puts("Expect to be 2 clerk:", findBoon(dbRepo, "clerk", "job").size());
 //        puts("Expect to be 2 red:", findBoon(dbRepo, "red", "colour").size());
 
-        managers.get(0).put("job","clerk");
-        return managers;
+        Map<String, String> newItem = Maps.copy(managers.get(0));
+        newItem.put("job", "clerk");
+        return newItem;
     }
 
     private static Repo<String, Map<String, String>> setup() {
